@@ -1,0 +1,86 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    meta.helm.sh/release-name: zabbix
+    meta.helm.sh/release-namespace: monitoring
+  labels:
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: zabbix-helm-chart
+    app.kubernetes.io/version: trunk
+    helm.sh/chart: zabbix-helm-chart-1.6.8
+  name: zabbix-zabbix-helm-chart
+rules:
+- nonResourceURLs:
+  - /metrics
+  - /metrics/cadvisor
+  - /version
+  - /healthz
+  - /readyz
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - nodes/metrics
+  - nodes/spec
+  - nodes/proxy
+  - nodes/stats
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  - pods
+  - services
+  - componentstatuses
+  - nodes
+  - endpoints
+  - events
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  - cronjobs
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - extensions
+  resources:
+  - deployments
+  - daemonsets
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - apps
+  resources:
+  - statefulsets
+  - deployments
+  - daemonsets
+  verbs:
+  - get
+  - list
+
+
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["*"] 
+
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["*"] 
+
+- apiGroups: [""]
+  resources: ["persistentvolumes"]
+  verbs: ["*"] 
+
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims", "services"]
+  verbs: ["*"] 
