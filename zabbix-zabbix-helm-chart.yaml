@@ -1,0 +1,98 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  # Mantendo o nome do Service Account/ClusterRole
+  name: zabbix-zabbix-helm-chart
+  # Mantendo os labels importantes para o Helm
+  labels:
+    app.kubernetes.io/instance: zabbix
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: zabbix-helm-chart
+    helm.sh/chart: zabbix-helm-chart-1.6.8
+rules:
+# 1. Permissão para ler Métricas (SOLUÇÃO DO PROBLEMA ORIGINAL)
+- apiGroups:
+  - metrics.k8s.io
+  resources:
+  - pods
+  - nodes
+  verbs:
+  - get
+  - list
+# 2. Permissões de Leitura de Recursos Padrão e Namespace ("")
+- apiGroups: [""]
+  resources:
+  - namespaces
+  - pods
+  - services
+  - componentstatuses
+  - nodes
+  - endpoints
+  - events
+  verbs:
+  - get
+  - list
+# 3. Permissões de Leitura de Nodes/Proxy (recursos com subpath)
+- apiGroups: [""]
+  resources:
+  - nodes/metrics
+  - nodes/spec
+  - nodes/proxy
+  - nodes/stats
+  verbs:
+  - get
+# 4. Permissões de Leitura de Batch (Jobs e CronJobs)
+- apiGroups: ["batch"]
+  resources:
+  - jobs
+  - cronjobs
+  verbs:
+  - get
+  - list
+# 5. Permissões de Leitura de Apps (StatefulSets, Deployments, DaemonSets)
+- apiGroups: ["apps"]
+  resources:
+  - statefulsets
+  - deployments
+  - daemonsets
+  verbs:
+  - get
+  - list
+# 6. Permissões de Leitura de Extensions (Deployment e DaemonSets - Regra Duplicada/Antiga)
+- apiGroups: ["extensions"]
+  resources:
+  - deployments
+  - daemonsets
+  verbs:
+  - get
+  - list
+# 7. Permissões Globais para Deployment (apps/*)
+- apiGroups: ["apps"]
+  resources:
+  - deployments
+  verbs: ["*"]
+# 8. Permissões Globais para Networking (Ingresses)
+- apiGroups: ["networking.k8s.io"]
+  resources:
+  - ingresses
+  verbs: ["*"]
+# 9. Permissões Globais para Persistent Volumes (PVs)
+- apiGroups: [""]
+  resources:
+  - persistentvolumes
+  verbs: ["*"]
+# 10. Permissões Globais para PVCs e Services
+- apiGroups: [""]
+  resources:
+  - persistentvolumeclaims
+  - services
+  verbs: ["*"]
+# 11. Permissões de URLs Não-Recurso (Health/Metrics do servidor API)
+- nonResourceURLs:
+  - /metrics
+  - /metrics/cadvisor
+  - /version
+  - /healthz
+  - /readyz
+  verbs:
+  - get
