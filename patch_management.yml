@@ -1,5 +1,5 @@
 ---
-- name: Gestão de Patches - Windows 11 (TRT 22)
+- name: Gestão de Patches - Windows 11
   hosts: all
   tasks:
     - name: Buscar e instalar atualizações críticas e de segurança
