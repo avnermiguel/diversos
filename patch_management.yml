@@ -1,0 +1,18 @@
+---
+- name: Gestão de Patches - Windows 11 (TRT 22)
+  hosts: workstations_windows
+  tasks:
+    - name: Buscar e instalar atualizações críticas e de segurança
+      win_updates:
+        category_names:
+          - SecurityUpdates
+          - CriticalUpdates
+          - DefinitionUpdates
+        state: installed
+        reboot: yes
+        reboot_timeout: 1200
+      register: update_result
+
+    - name: Reportar status do patch
+      debug:
+        msg: "Status da atualização: {{ update_result.found_update_count }} encontradas, {{ update_result.installed_update_count }} instaladas."
