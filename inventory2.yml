@@ -1,5 +1,4 @@
-# Use este cabeçalho obrigatório para inventários YAML
-plugin: ansible.builtin.constructed 
 all:
   hosts:
-    localhost:
+    minha_maquina_teste:
+      ansible_host: 10.0.0.1
