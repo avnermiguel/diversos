@@ -1,7 +1,7 @@
 plugin: microsoft.ad.ad
 # O AWX injeta as credenciais LDAP que você selecionou no "Source" 
 # automaticamente nestas variáveis de ambiente:
-server: seu_controlador_dominio.dominio.com.br
+server: winserver2025.local.info
 user: "{{ lookup('env', 'AD_USER') }}"
 password: "{{ lookup('env', 'AD_PASSWORD') }}"
 
