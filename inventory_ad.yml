@@ -1,0 +1,20 @@
+---
+plugin: microsoft.ad.ldap
+# IP do seu Domain Controller (winserver2025)
+server: 10.0.0.4
+realm: LOCAL.INFO
+
+# Filtro para capturar apenas as máquinas (clinet-01 e futuras)
+include_computers: true
+
+# Transforma o nome do AD em um IP acessível para o Ansible na Azure
+hostvar_expressions:
+  ansible_host: dNSHostName
+
+# Variáveis padrão para todas as máquinas encontradas
+group_vars:
+  all:
+    ansible_connection: winrm
+    ansible_port: 5985
+    ansible_winrm_transport: ntlm
+    ansible_winrm_server_cert_validation: ignore
