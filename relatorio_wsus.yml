@@ -1,0 +1,33 @@
+---
+- name: TRT 22 - Relatório de Compliance de Atualizações (Estilo WSUS)
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: 1. Auditar atualizações PENDENTES (Modo Somente Leitura)
+      win_updates:
+        category_names:
+          - SecurityUpdates
+          - CriticalUpdates
+          - UpdateRollups
+        state: searched
+      register: scan_pendentes
+
+    - name: 2. Coletar histórico das últimas 5 atualizações INSTALADAS
+      win_shell: |
+        Get-HotFix | Sort-Object InstalledOn -Descending | Select-Object -First 5 | ForEach-Object { "$($_.HotFixID) - $($_.Description) - $($_.InstalledOn)" }
+      register: historico_instaladas
+
+    - name: 3. Gerar Relatório de Status no AWX
+      debug:
+        msg:
+          - "======================================================"
+          - " MÁQUINA: {{ inventory_hostname }} "
+          - " SISTEMA: {{ ansible_distribution }} "
+          - "======================================================"
+          - ">>> PENDENTES: {{ scan_pendentes.found_update_count }} atualização(ões) aguardando instalação."
+          - ">>> KBs PENDENTES:"
+          - "{{ scan_pendentes.updates.values() | map(attribute='title') | list | default(['Nenhuma atualização pendente']) }}"
+          - "------------------------------------------------------"
+          - ">>> ÚLTIMOS KBs INSTALADOS NA MÁQUINA:"
+          - "{{ historico_instaladas.stdout_lines }}"
+          - "======================================================"
