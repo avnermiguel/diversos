@@ -1,5 +1,5 @@
 ---
-- name: TRT 22 - Relatório de Compliance de Atualizações (Estilo WSUS)
+- name: Relatório de Compliance de Atualizações (Estilo WSUS)
   hosts: all
   gather_facts: yes
   tasks:
