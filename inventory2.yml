@@ -1,0 +1,5 @@
+# Use este cabeçalho obrigatório para inventários YAML
+plugin: ansible.builtin.constructed 
+all:
+  hosts:
+    localhost:
