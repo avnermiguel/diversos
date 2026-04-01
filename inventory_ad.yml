@@ -4,9 +4,9 @@ server: 10.0.0.4
 realm: LOCAL.INFO
 include_computers: true
 
-# Aqui está a mágica: ele vai ler as variáveis que o AWX injetar
-username: "{ { lookup('env', 'AD_USER') } }"
-password: "{ { lookup('env', 'AD_PASS') } }"
+# Injeção das credenciais via variáveis de ambiente do AWX
+username: "{{ lookup('env', 'AD_USER') }}"
+password: "{{ lookup('env', 'AD_PASS') }}"
 
 hostvar_expressions:
   ansible_host: dNSHostName
