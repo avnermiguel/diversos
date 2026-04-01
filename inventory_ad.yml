@@ -1,17 +1,16 @@
 ---
 plugin: microsoft.ad.ldap
-# IP do seu Domain Controller (winserver2025)
 server: 10.0.0.4
 realm: LOCAL.INFO
-
-# Filtro para capturar apenas as máquinas (clinet-01 e futuras)
 include_computers: true
 
-# Transforma o nome do AD em um IP acessível para o Ansible na Azure
+# Aqui está a mágica: ele vai ler as variáveis que o AWX injetar
+username: "{ { lookup('env', 'AD_USER') } }"
+password: "{ { lookup('env', 'AD_PASS') } }"
+
 hostvar_expressions:
   ansible_host: dNSHostName
 
-# Variáveis padrão para todas as máquinas encontradas
 group_vars:
   all:
     ansible_connection: winrm
