@@ -1,4 +1,4 @@
-plugin: microsoft.ad.ad
+plugin: microsoft.ad.ldap
 # O AWX injeta as credenciais LDAP que você selecionou no "Source" 
 # automaticamente nestas variáveis de ambiente:
 server: winserver2025.local.info
