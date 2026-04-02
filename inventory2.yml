@@ -1,16 +1,10 @@
-plugin: microsoft.ad.ldap
-# O AWX injeta as credenciais LDAP que você selecionou no "Source" 
-# automaticamente nestas variáveis de ambiente:
+plugin: microsoft.ad.ad
 server: winserver2025.local.info
 user: "{{ lookup('env', 'AD_USER') }}"
 password: "{{ lookup('env', 'AD_PASSWORD') }}"
-
-# Filtros para não trazer o AD inteiro e explodir o licenciamento/performance
 filter: "(objectClass=computer)"
 attributes:
   - name
   - sAMAccountName
   - dNSHostName
-
-# Organiza os hosts em grupos baseados na OU (Opcional, mas ajuda muito)
 include_ou_groups: true
