@@ -16,3 +16,5 @@
     - name: Reportar status do patch
       debug:
         msg: "Status da atualização: {{ update_result.found_update_count }} encontradas, {{ update_result.installed_update_count }} instaladas."
+
+        
