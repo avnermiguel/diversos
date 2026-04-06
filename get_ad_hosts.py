@@ -2,6 +2,14 @@
 import os
 import json
 import sys
+import hashlib
+# A magica para o Python 3.12 + OpenSSL 3.x aceitar MD4 (usado pelo NTLM)
+try:
+    hashlib.new('md4')
+except ValueError:
+    # Se falhar, tentamos forçar o carregamento do provider legacy via ambiente (se disponivel)
+    os.environ['OPENSSL_CONF'] = '/dev/null' 
+
 from ldap3 import Server, Connection, ALL, NTLM 
 
 def get_inventory():
@@ -9,7 +17,6 @@ def get_inventory():
     password = os.environ.get('AD_PASSWORD')
     
     server_addr = "10.0.0.4"
-    # Certifique-se de que o search_base condiz com seu domínio
     search_base = 'DC=local,DC=info' 
 
     inventory = {
@@ -27,18 +34,13 @@ def get_inventory():
 
     try:
         if not user or not password:
-            raise Exception("Credenciais AD_USER ou AD_PASSWORD nao encontradas no ambiente.")
+            raise Exception("Credenciais AD_USER ou AD_PASSWORD nao encontradas.")
 
         server = Server(server_addr, port=389, get_info=ALL)
 
-        # AQUI ESTAVA O ERRO: Precisamos garantir o DOMINIO\usuario
-        # Se seu dominio for diferente de LOCAL, mude o texto abaixo
-        if "\\" not in user:
-            formatted_user = f"LOCAL\\{user}"
-        else:
-            formatted_user = user
+        # Garante o formato DOMINIO\usuario
+        formatted_user = user if "\\" in user else f"LOCAL\\{user}"
 
-        # USANDO O FORMATTED_USER AQUI:
         with Connection(server, user=formatted_user, password=password, authentication=NTLM, auto_bind=True) as conn:
             conn.search(
                 search_base=search_base,
