@@ -9,6 +9,8 @@
           - SecurityUpdates
           - CriticalUpdates
           - UpdateRollups
+          - UpdateRollups
+          - Updates
         state: searched
       register: scan_pendentes
 
