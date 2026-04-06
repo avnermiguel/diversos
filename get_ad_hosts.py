@@ -10,7 +10,7 @@ def get_inventory():
     user = os.environ.get('AD_USER')
     password = os.environ.get('AD_PASSWORD')
     
-    # --- CONFIGURAÇÕES DO AMBIENTE TRT22 ---
+    # --- CONFIGURAÇÕES DO AMBIENTE  ---
     # Use o IP do Domain Controller para evitar falhas de DNS no container
     server_addr = "10.0.0.4" 
     # Base de busca (Ajuste para o seu domínio real)
