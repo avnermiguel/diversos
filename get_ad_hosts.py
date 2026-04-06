@@ -2,14 +2,6 @@
 import os
 import json
 import sys
-import hashlib
-# A magica para o Python 3.12 + OpenSSL 3.x aceitar MD4 (usado pelo NTLM)
-try:
-    hashlib.new('md4')
-except ValueError:
-    # Se falhar, tentamos forçar o carregamento do provider legacy via ambiente (se disponivel)
-    os.environ['OPENSSL_CONF'] = '/dev/null' 
-
 from ldap3 import Server, Connection, ALL, NTLM 
 
 def get_inventory():
