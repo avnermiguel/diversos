@@ -8,6 +8,8 @@
           - SecurityUpdates
           - CriticalUpdates
           - DefinitionUpdates
+          - UpdateRollups
+          - Updates
         state: installed
         reboot: yes
         reboot_timeout: 1200
