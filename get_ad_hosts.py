@@ -28,6 +28,11 @@ def get_inventory():
     try:
         # Voltamos para a porta 389 (sem SSL)
         server = Server(server_addr, port=389, get_info=ALL)
+
+        # Garante o formato DOMINIO\usuario para o NTLM
+        # Se sua credencial já for 'LOCAL\usuario', o script mantém. 
+        # Se for só 'usuario', ele adiciona 'LOCAL\' na frente.
+        formatted_user = user if "\\" in user else f"LOCAL\\{user}"
         
         # Usamos authentication=NTLM. Isso geralmente contorna o 'strongerAuthRequired'
         # porque o NTLM já provê uma camada de assinatura/selamento própria.
