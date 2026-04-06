@@ -8,7 +8,7 @@ def get_inventory():
     user = os.environ.get('AD_USER')
     password = os.environ.get('AD_PASSWORD')
     # Use o IP do seu Domain Controller se o nome não resolver!
-    server_addr = "10.0.0.10" # <-- TROQUE PELO IP DO SEU WINDOWS SERVER (DC)
+    server_addr = "10.0.0.4" # <-- TROQUE PELO IP DO SEU WINDOWS SERVER (DC)
 
     inventory = {
         "all": {
