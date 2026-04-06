@@ -1,5 +1,6 @@
 plugin: microsoft.ad.ad
 server: winserver2025.local.info
+realm: LOCAL.INFO
 user: "{{ lookup('env', 'AD_USER') }}"
 password: "{{ lookup('env', 'AD_PASSWORD') }}"
 filter: "(objectClass=computer)"
@@ -7,4 +8,3 @@ attributes:
   - name
   - sAMAccountName
   - dNSHostName
-include_ou_groups: true
