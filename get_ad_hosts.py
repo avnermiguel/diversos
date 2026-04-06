@@ -2,7 +2,8 @@
 import os
 import json
 import sys
-from ldap3 import Server, Connection, ALL, NTLM 
+import ssl
+from ldap3 import Server, Connection, ALL, Tls
 
 def get_inventory():
     user = os.environ.get('AD_USER')
@@ -25,15 +26,20 @@ def get_inventory():
     }
 
     try:
-        if not user or not password:
-            raise Exception("Credenciais AD_USER ou AD_PASSWORD nao encontradas.")
+        # Configuração TLS para aceitar certificados de laboratório
+        tls_config = Tls(validate=ssl.CERT_NONE, version=ssl.PROTOCOL_TLSv1_2)
+        
+        # Conexão na porta 636 (LDAPS) - Isso mata o erro de strongerAuthRequired
+        server = Server(server_addr, port=636, use_ssl=True, tls=tls_config, get_info=ALL)
+        
+        # No LDAPS, o formato do usuário pode ser o UPN (usuario@dominio.com) 
+        # ou o Distinguished Name. Vamos tentar o UPN que é mais fácil.
+        if "@" not in user and "\\" not in user:
+            bind_user = f"{user}@local.info"
+        else:
+            bind_user = user
 
-        server = Server(server_addr, port=389, get_info=ALL)
-
-        # Garante o formato DOMINIO\usuario
-        formatted_user = user if "\\" in user else f"LOCAL\\{user}"
-
-        with Connection(server, user=formatted_user, password=password, authentication=NTLM, auto_bind=True) as conn:
+        with Connection(server, user=bind_user, password=password, auto_bind=True) as conn:
             conn.search(
                 search_base=search_base,
                 search_filter='(objectClass=computer)',
