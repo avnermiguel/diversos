@@ -2,14 +2,14 @@
 import os
 import json
 import sys
-# Importamos NTLM para uma autenticação que o Windows aceita na 389
 from ldap3 import Server, Connection, ALL, NTLM 
 
 def get_inventory():
     user = os.environ.get('AD_USER')
     password = os.environ.get('AD_PASSWORD')
     
-    server_addr = "10.0.0.4" # Seu IP atualizado
+    server_addr = "10.0.0.4"
+    # Certifique-se de que o search_base condiz com seu domínio
     search_base = 'DC=local,DC=info' 
 
     inventory = {
@@ -26,17 +26,20 @@ def get_inventory():
     }
 
     try:
-        # Voltamos para a porta 389 (sem SSL)
+        if not user or not password:
+            raise Exception("Credenciais AD_USER ou AD_PASSWORD nao encontradas no ambiente.")
+
         server = Server(server_addr, port=389, get_info=ALL)
 
-        # Garante o formato DOMINIO\usuario para o NTLM
-        # Se sua credencial já for 'LOCAL\usuario', o script mantém. 
-        # Se for só 'usuario', ele adiciona 'LOCAL\' na frente.
-        formatted_user = user if "\\" in user else f"LOCAL\\{user}"
-        
-        # Usamos authentication=NTLM. Isso geralmente contorna o 'strongerAuthRequired'
-        # porque o NTLM já provê uma camada de assinatura/selamento própria.
-        with Connection(server, user=user, password=password, authentication=NTLM, auto_bind=True) as conn:
+        # AQUI ESTAVA O ERRO: Precisamos garantir o DOMINIO\usuario
+        # Se seu dominio for diferente de LOCAL, mude o texto abaixo
+        if "\\" not in user:
+            formatted_user = f"LOCAL\\{user}"
+        else:
+            formatted_user = user
+
+        # USANDO O FORMATTED_USER AQUI:
+        with Connection(server, user=formatted_user, password=password, authentication=NTLM, auto_bind=True) as conn:
             conn.search(
                 search_base=search_base,
                 search_filter='(objectClass=computer)',
