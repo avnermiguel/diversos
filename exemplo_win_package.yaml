@@ -1,0 +1,37 @@
+---
+- name: Distribuicao de Ferramentas de Infraestrutura via win_package
+  hosts: all
+  gather_facts: false
+  
+  vars:
+    # URL oficial do instalador x64 do Azure CLI
+    azure_cli_url: "https://aka.ms/installazurecliwindowsx64"
+    temp_download_path: "C:\\Temp\\AzureCLI.msi"
+
+  tasks:
+    - name: Garantir que o diretorio temporario existe
+      ansible.windows.win_file:
+        path: C:\Temp
+        state: directory
+
+    - name: Fazer o download do instalador MSI do Azure CLI
+      ansible.windows.win_get_url:
+        url: "{{ azure_cli_url }}"
+        dest: "{{ temp_download_path }}"
+        force: false # Evita baixar novamente se a task falhar no meio e precisar re-rodar
+
+    - name: Executar a instalacao silenciosa do pacote
+      ansible.windows.win_package:
+        path: "{{ temp_download_path }}"
+        state: present
+        # Argumentos nativos do Windows Installer (msiexec)
+        arguments:
+          - /qn          # Modo silencioso (sem interface grafica)
+          - /norestart   # Impede o reboot automatico do servidor
+      register: install_result
+
+    - name: Remover o instalador temporario apos o sucesso
+      ansible.windows.win_file:
+        path: "{{ temp_download_path }}"
+        state: absent
+      when: install_result is success
