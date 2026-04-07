@@ -1,0 +1,25 @@
+plugin: microsoft.ad.ldap
+server: 10.0.0.4
+
+# O AWX continuará injetando as variáveis da sua Credencial Customizada
+username: "{{ lookup('env', 'AD_USER') }}@local.info"
+password: "{{ lookup('env', 'AD_PASSWORD') }}"
+
+base_dn: "DC=local,DC=info"
+
+# Como você já configurou o AD CS no lab, usar LDAPS é a melhor configuração 
+# para replicar a segurança do ambiente do cliente.
+tls_mode: ldaps
+cert_validation: ignore
+
+# Cria subgrupos automáticos baseados nas OUs do Windows
+keyed_groups:
+  - key: organizational_unit_name
+    prefix: ou
+
+# O plugin nativo permite usar o "compose" para criar as variáveis de host dinamicamente
+compose:
+  ansible_connection: "'winrm'"
+  ansible_port: 5985
+  ansible_winrm_transport: "'ntlm'"
+  ansible_winrm_server_cert_validation: "'ignore'"
