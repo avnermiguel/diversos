@@ -1,0 +1,20 @@
+---
+- name: Distribuição de Software Base via Chocolatey
+  hosts: all
+  gather_facts: false
+  
+  tasks:
+    - name: Garantir que o Chocolatey esta instalado no host
+      ansible.windows.win_shell: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+      args:
+        # Só executa o shell se o executável do choco não existir
+        creates: C:\ProgramData\chocolatey\bin\choco.exe
+
+    - name: Instalar utilitarios essenciais de operacoes
+      chocolatey.chocolatey.win_chocolatey:
+        name:
+          - 7zip
+          - notepadplusplus
+        state: present
+        # force: yes # Descomente se quiser forçar a reinstalação
