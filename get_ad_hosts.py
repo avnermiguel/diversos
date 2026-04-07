@@ -2,8 +2,7 @@
 import os
 import json
 import sys
-# Importamos SASL e GSSAPI para autenticação segura na porta 389
-from ldap3 import Server, Connection, ALL, SASL, GSSAPI
+from ldap3 import Server, Connection, ALL
 
 def get_inventory():
     user = os.environ.get('AD_USER')
@@ -26,20 +25,17 @@ def get_inventory():
     }
 
     try:
-        # Conexão na 389, mas com SASL/GSSAPI (isso satisfaz o strongerAuthRequired)
+        # Conexão direta na porta 389
         server = Server(server_addr, port=389, get_info=ALL)
         
-        # O GSSAPI exige o usuário no formato UPN (usuario@dominio.com)
-        if "@" not in user:
+        # Formato UPN (usuario@dominio) é o mais estável
+        if "@" not in user and "\\" not in user:
             bind_user = f"{user}@local.info"
         else:
             bind_user = user
 
-        # Tentativa de Bind usando SASL (mecanismo que o Windows prefere para segurança sem SSL)
-        with Connection(server, user=bind_user, password=password, 
-                        authentication=SASL, sasl_mechanism=GSSAPI, 
-                        auto_bind=True) as conn:
-            
+        # Bind SIMPLES (Agora vai funcionar porque baixamos a guarda do Windows no passo 1)
+        with Connection(server, user=bind_user, password=password, auto_bind=True) as conn:
             conn.search(
                 search_base=search_base,
                 search_filter='(objectClass=computer)',
