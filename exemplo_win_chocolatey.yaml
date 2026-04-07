@@ -2,6 +2,9 @@
 - name: Distribuição de Software Base via Chocolatey
   hosts: all
   gather_facts: false
+  become: true
+  become_method: runas
+  become_user: SYSTEM
   
   tasks:
     - name: Garantir que o Chocolatey esta instalado no host
