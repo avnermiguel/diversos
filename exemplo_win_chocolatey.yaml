@@ -3,14 +3,10 @@
   hosts: all
   gather_facts: false
   
-  # Força a elevação usando a mesma credencial do WinRM
+  # A elevação agora vai funcionar porque a flag gráfica do AWX está ativa!
   become: true
   become_method: runas
-  become_user: "{{ ansible_user }}"
-  
-  vars:
-    # Pega a senha da Machine Credential do AWX dinamicamente
-    ansible_become_password: "{{ ansible_password }}"
+  become_user: SYSTEM
 
   tasks:
     - name: Garantir que o Chocolatey esta instalado no host
