@@ -8,22 +8,26 @@
   become_user: SYSTEM
 
   tasks:
+    - name: Verificar se o Chocolatey ja esta instalado
+      ansible.windows.win_stat:
+        path: C:\ProgramData\chocolatey\bin\choco.exe
+      register: choco_check
+
     - name: Garantir que o diretorio temporario existe
       ansible.windows.win_file:
         path: C:\Temp
         state: directory
+      when: not choco_check.stat.exists
 
-    - name: Fazer o download do script do Chocolatey (Teste de Rede)
+    - name: Fazer o download do script do Chocolatey
       ansible.windows.win_get_url:
         url: 'https://community.chocolatey.org/install.ps1'
         dest: C:\Temp\install_choco.ps1
-      args:
-        creates: C:\ProgramData\chocolatey\bin\choco.exe
+      when: not choco_check.stat.exists
 
-    - name: Executar a instalacao do Chocolatey localmente (Teste de Permissao)
+    - name: Executar a instalacao do Chocolatey localmente
       ansible.windows.win_command: powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Temp\install_choco.ps1
-      args:
-        creates: C:\ProgramData\chocolatey\bin\choco.exe
+      when: not choco_check.stat.exists
 
     - name: Instalar utilitarios essenciais de operacoes
       chocolatey.chocolatey.win_chocolatey:
