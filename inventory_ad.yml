@@ -1,19 +1,17 @@
 ---
-plugin: microsoft.ad.ldap
-server: 10.0.0.4
-realm: LOCAL.INFO
-include_computers: true
+plugin: microsoft.ad.ad
+domain_server: 10.0.0.4
 
-# Injeção das credenciais via variáveis de ambiente do AWX
-username: "{{ lookup('env', 'AD_USER') }}"
-password: "{{ lookup('env', 'AD_PASS') }}"
+# O AWX continuará injetando as variáveis da sua Credencial Customizada
+domain_username: "{{ lookup('env', 'AD_USER') }}@local.info"
+domain_password: "{{ lookup('env', 'AD_PASSWORD') }}"
 
-hostvar_expressions:
-  ansible_host: dNSHostName
+# Ignoramos a validação porque é o certificado do lab
+validate_certs: false
 
-group_vars:
-  all:
-    ansible_connection: winrm
-    ansible_port: 5985
-    ansible_winrm_transport: ntlm
-    ansible_winrm_server_cert_validation: ignore
+# O Compose serve para criarmos aquelas variáveis de WinRM e atrelarmos aos hosts que forem encontrados
+compose:
+  ansible_connection: "'winrm'"
+  ansible_port: 5985
+  ansible_winrm_transport: "'ntlm'"
+  ansible_winrm_server_cert_validation: "'ignore'"
