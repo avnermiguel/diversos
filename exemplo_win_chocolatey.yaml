@@ -3,15 +3,25 @@
   hosts: all
   gather_facts: false
   
-  # A elevação agora vai funcionar porque a flag gráfica do AWX está ativa!
   become: true
   become_method: runas
   become_user: SYSTEM
 
   tasks:
-    - name: Garantir que o Chocolatey esta instalado no host
-      ansible.windows.win_shell: |
-        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    - name: Garantir que o diretorio temporario existe
+      ansible.windows.win_file:
+        path: C:\Temp
+        state: directory
+
+    - name: Fazer o download do script do Chocolatey (Teste de Rede)
+      ansible.windows.win_get_url:
+        url: 'https://community.chocolatey.org/install.ps1'
+        dest: C:\Temp\install_choco.ps1
+      args:
+        creates: C:\ProgramData\chocolatey\bin\choco.exe
+
+    - name: Executar a instalacao do Chocolatey localmente (Teste de Permissao)
+      ansible.windows.win_command: powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Temp\install_choco.ps1
       args:
         creates: C:\ProgramData\chocolatey\bin\choco.exe
 
